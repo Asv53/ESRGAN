@@ -1,5 +1,5 @@
 # general settings
-name: 005_RRDBNet_PSNR_x4_f64b21_SET14_10k_B16G1_wandb
+name: 21-36
 model_type: SRModel
 scale: 4
 num_gpu: 1  # set num_gpu: 0 for cpu mode
