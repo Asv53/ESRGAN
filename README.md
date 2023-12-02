@@ -11,3 +11,4 @@ These models were trained on SET 14 dataset with random flips and rotation and v
 These models are trained upto 10000 iterations (epochs ~= 50)
 These models were evaluated on a custom dataset consisting of images from various datasts that include URBAN100, OST300 and BSD100.
 These models are evaluated for every 500 iterations and the results were plotted.
+# Results
