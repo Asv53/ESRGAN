@@ -19,3 +19,5 @@ All the results for each iteration are located in the "results" folder.
 
 ### MISCELLANEOUS
 All the training and testing codes are available in "docs" folder README.md
+
+## Please Checkout "Assets" folder for overview and results
