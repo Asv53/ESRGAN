@@ -25,7 +25,7 @@ network_g:
 
 # path
 path:
-  pretrain_network_g: experiments/21-36/models/net_g_10000.pth
+  pretrain_network_g: experiments/21-36/models/21-36-net_g_10000.pth
   strict_load_g: true
 
 # validation settings
