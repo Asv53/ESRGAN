@@ -25,7 +25,7 @@ network_g:
 
 # path
 path:
-  pretrain_network_g: experiments/004_RRDBNet_PSNR_x4_f64b21_SET14_10k_B16G1_wandb/models/net_g_10000.pth
+  pretrain_network_g: experiments/21-36/models/net_g_10000.pth
   strict_load_g: true
 
 # validation settings
