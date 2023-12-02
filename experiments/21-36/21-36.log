@@ -1,0 +1,884 @@
+2023-08-19 09:58:53,708 INFO: 
+                ____                _       _____  ____
+               / __ ) ____ _ _____ (_)_____/ ___/ / __ \
+              / __  |/ __ `// ___// // ___/\__ \ / /_/ /
+             / /_/ // /_/ /(__  )/ // /__ ___/ // _, _/
+            /_____/ \__,_//____//_/ \___//____//_/ |_|
+     ______                   __   __                 __      __
+    / ____/____   ____   ____/ /  / /   __  __ _____ / /__   / /
+   / / __ / __ \ / __ \ / __  /  / /   / / / // ___// //_/  / /
+  / /_/ // /_/ // /_/ // /_/ /  / /___/ /_/ // /__ / /<    /_/
+  \____/ \____/ \____/ \____/  /_____/\____/ \___//_/|_|  (_)
+    
+Version Information: 
+	BasicSR: 1.4.2
+	PyTorch: 2.0.1+cu117
+	TorchVision: 0.15.2+cu117
+2023-08-19 09:58:53,708 INFO: 
+  name: 004_RRDBNet_PSNR_x4_f64b21_SET14_10k_B16G1_wandb
+  model_type: SRModel
+  scale: 4
+  num_gpu: 1
+  manual_seed: 0
+  datasets:[
+    train:[
+      name: SET14
+      type: PairedImageDataset
+      dataroot_gt: datasets/Set14/GTmod12_sub
+      dataroot_lq: datasets/Set14/LRbicx4_sub
+      filename_tmpl: {}
+      io_backend:[
+        type: disk
+      ]
+      gt_size: 128
+      use_hflip: True
+      use_rot: True
+      num_worker_per_gpu: 6
+      batch_size_per_gpu: 16
+      dataset_enlarge_ratio: 100
+      prefetch_mode: None
+      phase: train
+      scale: 4
+    ]
+    val:[
+      name: Set5
+      type: PairedImageDataset
+      dataroot_gt: datasets/Set5/GTmod12
+      dataroot_lq: datasets/Set5/LRbicx4
+      io_backend:[
+        type: disk
+      ]
+      phase: val
+      scale: 4
+    ]
+  ]
+  network_g:[
+    type: RRDBNet
+    num_in_ch: 3
+    num_out_ch: 3
+    num_feat: 64
+    num_block: 21
+    num_grow_ch: 36
+  ]
+  path:[
+    pretrain_network_g: None
+    strict_load_g: True
+    resume_state: None
+    experiments_root: D:\miniproject\zips\BasicSR\experiments\004_RRDBNet_PSNR_x4_f64b21_SET14_10k_B16G1_wandb
+    models: D:\miniproject\zips\BasicSR\experiments\004_RRDBNet_PSNR_x4_f64b21_SET14_10k_B16G1_wandb\models
+    training_states: D:\miniproject\zips\BasicSR\experiments\004_RRDBNet_PSNR_x4_f64b21_SET14_10k_B16G1_wandb\training_states
+    log: D:\miniproject\zips\BasicSR\experiments\004_RRDBNet_PSNR_x4_f64b21_SET14_10k_B16G1_wandb
+    visualization: D:\miniproject\zips\BasicSR\experiments\004_RRDBNet_PSNR_x4_f64b21_SET14_10k_B16G1_wandb\visualization
+  ]
+  train:[
+    ema_decay: 0.999
+    optim_g:[
+      type: Adam
+      lr: 0.0002
+      weight_decay: 0
+      betas: [0.9, 0.99]
+    ]
+    scheduler:[
+      type: CosineAnnealingRestartLR
+      periods: [250000, 250000, 250000, 250000]
+      restart_weights: [1, 1, 1, 1]
+      eta_min: 1e-07
+    ]
+    total_iter: 10000
+    warmup_iter: -1
+    pixel_opt:[
+      type: L1Loss
+      loss_weight: 1.0
+      reduction: mean
+    ]
+  ]
+  val:[
+    val_freq: 500.0
+    save_img: False
+    metrics:[
+      psnr:[
+        type: calculate_psnr
+        crop_border: 4
+        test_y_channel: False
+      ]
+    ]
+  ]
+  logger:[
+    print_freq: 100
+    save_checkpoint_freq: 500.0
+    use_tb_logger: True
+    wandb:[
+      project: None
+      resume_id: None
+    ]
+  ]
+  dist_params:[
+    backend: nccl
+    port: 29500
+  ]
+  dist: False
+  rank: 0
+  world_size: 1
+  auto_resume: False
+  is_train: True
+  root_path: D:\miniproject\zips\BasicSR
+
+2023-08-19 09:58:53,833 INFO: Dataset [PairedImageDataset] - SET14 is built.
+2023-08-19 09:58:53,833 INFO: Training statistics:
+	Number of train images: 32
+	Dataset enlarge ratio: 100
+	Batch size per gpu: 16
+	World size (gpu number): 1
+	Require iter number per epoch: 200
+	Total epochs: 50; iters: 10000.
+2023-08-19 09:58:53,833 INFO: Dataset [PairedImageDataset] - Set5 is built.
+2023-08-19 09:58:53,833 INFO: Number of val images/folders in Set5: 5
+2023-08-19 09:58:54,052 INFO: Network [RRDBNet] is created.
+2023-08-19 09:58:55,288 INFO: Network: RRDBNet, with parameters: 17,346,707
+2023-08-19 09:58:55,288 INFO: RRDBNet(
+  (conv_first): Conv2d(3, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  (body): Sequential(
+    (0): RRDB(
+      (rdb1): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb2): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb3): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (1): RRDB(
+      (rdb1): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb2): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb3): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (2): RRDB(
+      (rdb1): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb2): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb3): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (3): RRDB(
+      (rdb1): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb2): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb3): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (4): RRDB(
+      (rdb1): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb2): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb3): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (5): RRDB(
+      (rdb1): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb2): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb3): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (6): RRDB(
+      (rdb1): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb2): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb3): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (7): RRDB(
+      (rdb1): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb2): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb3): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (8): RRDB(
+      (rdb1): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb2): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb3): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (9): RRDB(
+      (rdb1): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb2): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb3): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (10): RRDB(
+      (rdb1): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb2): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb3): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (11): RRDB(
+      (rdb1): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb2): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb3): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (12): RRDB(
+      (rdb1): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb2): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb3): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (13): RRDB(
+      (rdb1): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb2): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb3): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (14): RRDB(
+      (rdb1): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb2): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb3): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (15): RRDB(
+      (rdb1): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb2): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb3): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (16): RRDB(
+      (rdb1): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb2): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb3): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (17): RRDB(
+      (rdb1): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb2): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb3): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (18): RRDB(
+      (rdb1): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb2): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb3): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (19): RRDB(
+      (rdb1): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb2): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb3): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (20): RRDB(
+      (rdb1): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb2): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+      (rdb3): ResidualDenseBlock(
+        (conv1): Conv2d(64, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv2): Conv2d(100, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv3): Conv2d(136, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv4): Conv2d(172, 36, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv5): Conv2d(208, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+  )
+  (conv_body): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  (conv_up1): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  (conv_up2): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  (conv_hr): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  (conv_last): Conv2d(64, 3, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  (lrelu): LeakyReLU(negative_slope=0.2, inplace=True)
+)
+2023-08-19 09:58:55,288 INFO: Use Exponential Moving Average with decay: 0.999
+2023-08-19 09:58:55,491 INFO: Network [RRDBNet] is created.
+2023-08-19 09:58:56,851 INFO: Loss [L1Loss] is created.
+2023-08-19 09:58:56,851 INFO: Model [SRModel] is created.
+2023-08-19 09:58:57,164 INFO: Start training from epoch: 0, iter: 0
+2023-08-19 10:04:56,892 INFO: [004_R..][epoch:  0, iter:     100, lr:(2.000e-04,)] [eta: 9:01:51, time (data): 3.597 (0.078)] l_pix: 5.4223e-02 
+2023-08-19 10:10:32,174 INFO: [004_R..][epoch:  0, iter:     200, lr:(2.000e-04,)] [eta: 9:01:56, time (data): 3.475 (0.040)] l_pix: 5.9482e-02 
+2023-08-19 10:16:11,719 INFO: [004_R..][epoch:  1, iter:     300, lr:(2.000e-04,)] [eta: 9:00:33, time (data): 3.352 (0.001)] l_pix: 3.5373e-02 
+2023-08-19 10:21:47,241 INFO: [004_R..][epoch:  1, iter:     400, lr:(2.000e-04,)] [eta: 8:55:25, time (data): 3.354 (0.001)] l_pix: 4.7186e-02 
+2023-08-19 10:27:26,880 INFO: [004_R..][epoch:  2, iter:     500, lr:(2.000e-04,)] [eta: 8:51:25, time (data): 3.354 (0.000)] l_pix: 4.3845e-02 
+2023-08-19 10:27:26,880 INFO: Saving models and training states.
+2023-08-19 10:27:32,679 INFO: Validation Set5
+	 # psnr: 16.2597	Best: 16.2597 @ 500 iter
+
+2023-08-19 10:30:28,482 INFO: [004_R..][epoch:  2, iter:     600, lr:(2.000e-04,)] [eta: 8:05:40, time (data): 2.548 (0.000)] l_pix: 3.9418e-02 
+2023-08-19 10:33:27,583 INFO: [004_R..][epoch:  3, iter:     700, lr:(2.000e-04,)] [eta: 7:31:33, time (data): 1.748 (0.001)] l_pix: 3.3416e-02 
+2023-08-19 10:36:22,615 INFO: [004_R..][epoch:  3, iter:     800, lr:(2.000e-04,)] [eta: 7:04:25, time (data): 1.749 (0.001)] l_pix: 3.8798e-02 
+2023-08-19 10:39:21,689 INFO: [004_R..][epoch:  4, iter:     900, lr:(2.000e-04,)] [eta: 6:43:21, time (data): 1.749 (0.002)] l_pix: 3.6494e-02 
+2023-08-19 10:42:16,742 INFO: [004_R..][epoch:  4, iter:   1,000, lr:(2.000e-04,)] [eta: 6:25:18, time (data): 1.750 (0.001)] l_pix: 4.5525e-02 
+2023-08-19 10:42:16,742 INFO: Saving models and training states.
+2023-08-19 10:42:19,104 INFO: Validation Set5
+	 # psnr: 21.4113	Best: 21.4113 @ 1000 iter
+
+2023-08-19 10:45:19,335 INFO: [004_R..][epoch:  5, iter:   1,100, lr:(2.000e-04,)] [eta: 6:11:00, time (data): 1.754 (0.001)] l_pix: 3.3639e-02 
+2023-08-19 10:48:14,211 INFO: [004_R..][epoch:  5, iter:   1,200, lr:(2.000e-04,)] [eta: 5:57:39, time (data): 1.751 (0.001)] l_pix: 2.9772e-02 
+2023-08-19 10:51:13,406 INFO: [004_R..][epoch:  6, iter:   1,300, lr:(2.000e-04,)] [eta: 5:46:22, time (data): 1.750 (0.001)] l_pix: 3.0554e-02 
+2023-08-19 10:54:08,214 INFO: [004_R..][epoch:  6, iter:   1,400, lr:(2.000e-04,)] [eta: 5:35:50, time (data): 1.749 (0.001)] l_pix: 3.5197e-02 
+2023-08-19 10:57:07,425 INFO: [004_R..][epoch:  7, iter:   1,500, lr:(2.000e-04,)] [eta: 5:26:44, time (data): 1.749 (0.001)] l_pix: 3.7029e-02 
+2023-08-19 10:57:07,425 INFO: Saving models and training states.
+2023-08-19 10:57:09,912 INFO: Validation Set5
+	 # psnr: 24.3817	Best: 24.3817 @ 1500 iter
+
+2023-08-19 11:00:05,819 INFO: [004_R..][epoch:  7, iter:   1,600, lr:(2.000e-04,)] [eta: 5:18:19, time (data): 1.754 (0.001)] l_pix: 2.8749e-02 
+2023-08-19 11:03:05,597 INFO: [004_R..][epoch:  8, iter:   1,700, lr:(2.000e-04,)] [eta: 5:10:39, time (data): 1.752 (0.000)] l_pix: 3.2441e-02 
+2023-08-19 11:06:00,773 INFO: [004_R..][epoch:  8, iter:   1,800, lr:(2.000e-04,)] [eta: 5:03:09, time (data): 1.752 (0.001)] l_pix: 2.9329e-02 
+2023-08-19 11:09:00,265 INFO: [004_R..][epoch:  9, iter:   1,900, lr:(2.000e-04,)] [eta: 4:56:27, time (data): 1.753 (0.001)] l_pix: 3.2534e-02 
+2023-08-19 11:11:55,247 INFO: [004_R..][epoch:  9, iter:   2,000, lr:(2.000e-04,)] [eta: 4:49:49, time (data): 1.751 (0.001)] l_pix: 4.2992e-02 
+2023-08-19 11:11:55,247 INFO: Saving models and training states.
+2023-08-19 11:11:57,608 INFO: Validation Set5
+	 # psnr: 25.9735	Best: 25.9735 @ 2000 iter
+
+2023-08-19 11:14:57,791 INFO: [004_R..][epoch: 10, iter:   2,100, lr:(2.000e-04,)] [eta: 4:44:00, time (data): 1.753 (0.001)] l_pix: 3.2271e-02 
+2023-08-19 11:17:52,741 INFO: [004_R..][epoch: 10, iter:   2,200, lr:(2.000e-04,)] [eta: 4:38:00, time (data): 1.751 (0.001)] l_pix: 3.5055e-02 
+2023-08-19 11:20:51,497 INFO: [004_R..][epoch: 11, iter:   2,300, lr:(2.000e-04,)] [eta: 4:32:29, time (data): 1.746 (0.001)] l_pix: 3.0186e-02 
+2023-08-19 11:23:46,284 INFO: [004_R..][epoch: 11, iter:   2,400, lr:(2.000e-04,)] [eta: 4:26:58, time (data): 1.747 (0.001)] l_pix: 3.3658e-02 
+2023-08-19 11:26:45,368 INFO: [004_R..][epoch: 12, iter:   2,500, lr:(2.000e-04,)] [eta: 4:21:52, time (data): 1.748 (0.001)] l_pix: 2.8037e-02 
+2023-08-19 11:26:45,368 INFO: Saving models and training states.
+2023-08-19 11:26:47,682 INFO: Validation Set5
+	 # psnr: 26.8523	Best: 26.8523 @ 2500 iter
+
+2023-08-19 11:29:44,165 INFO: [004_R..][epoch: 12, iter:   2,600, lr:(1.999e-04,)] [eta: 4:16:55, time (data): 1.757 (0.001)] l_pix: 2.6799e-02 
+2023-08-19 11:32:43,738 INFO: [004_R..][epoch: 13, iter:   2,700, lr:(1.999e-04,)] [eta: 4:12:09, time (data): 1.753 (0.002)] l_pix: 3.2176e-02 
+2023-08-19 11:35:39,641 INFO: [004_R..][epoch: 13, iter:   2,800, lr:(1.999e-04,)] [eta: 4:07:21, time (data): 1.756 (0.001)] l_pix: 3.3467e-02 
+2023-08-19 11:38:39,323 INFO: [004_R..][epoch: 14, iter:   2,900, lr:(1.999e-04,)] [eta: 4:02:50, time (data): 1.755 (0.002)] l_pix: 3.2779e-02 
+2023-08-19 11:41:34,991 INFO: [004_R..][epoch: 14, iter:   3,000, lr:(1.999e-04,)] [eta: 3:58:16, time (data): 1.756 (0.001)] l_pix: 3.1757e-02 
+2023-08-19 11:41:34,991 INFO: Saving models and training states.
+2023-08-19 11:41:37,227 INFO: Validation Set5
+	 # psnr: 27.4731	Best: 27.4731 @ 3000 iter
+
+2023-08-19 11:44:37,839 INFO: [004_R..][epoch: 15, iter:   3,100, lr:(1.999e-04,)] [eta: 3:54:04, time (data): 1.755 (0.002)] l_pix: 2.5295e-02 
+2023-08-19 11:47:32,960 INFO: [004_R..][epoch: 15, iter:   3,200, lr:(1.999e-04,)] [eta: 3:49:40, time (data): 1.753 (0.002)] l_pix: 3.0344e-02 
+2023-08-19 11:50:32,265 INFO: [004_R..][epoch: 16, iter:   3,300, lr:(1.999e-04,)] [eta: 3:45:30, time (data): 1.750 (0.001)] l_pix: 3.2852e-02 
+2023-08-19 11:53:27,260 INFO: [004_R..][epoch: 16, iter:   3,400, lr:(1.999e-04,)] [eta: 3:41:15, time (data): 1.750 (0.001)] l_pix: 3.0792e-02 
+2023-08-19 11:56:26,356 INFO: [004_R..][epoch: 17, iter:   3,500, lr:(1.999e-04,)] [eta: 3:37:13, time (data): 1.747 (0.001)] l_pix: 3.4147e-02 
+2023-08-19 11:56:26,356 INFO: Saving models and training states.
+2023-08-19 11:56:28,530 INFO: Validation Set5
+	 # psnr: 27.9665	Best: 27.9665 @ 3500 iter
+
+2023-08-19 11:59:25,120 INFO: [004_R..][epoch: 17, iter:   3,600, lr:(1.999e-04,)] [eta: 3:33:14, time (data): 1.757 (0.001)] l_pix: 3.1631e-02 
+2023-08-19 12:02:24,548 INFO: [004_R..][epoch: 18, iter:   3,700, lr:(1.999e-04,)] [eta: 3:29:19, time (data): 1.753 (0.001)] l_pix: 3.1653e-02 
+2023-08-19 12:05:20,036 INFO: [004_R..][epoch: 18, iter:   3,800, lr:(1.999e-04,)] [eta: 3:25:21, time (data): 1.754 (0.001)] l_pix: 2.8080e-02 
+2023-08-19 12:08:19,614 INFO: [004_R..][epoch: 19, iter:   3,900, lr:(1.999e-04,)] [eta: 3:21:32, time (data): 1.753 (0.001)] l_pix: 3.1007e-02 
+2023-08-19 12:11:14,969 INFO: [004_R..][epoch: 19, iter:   4,000, lr:(1.999e-04,)] [eta: 3:17:39, time (data): 1.753 (0.001)] l_pix: 3.5229e-02 
+2023-08-19 12:11:14,969 INFO: Saving models and training states.
+2023-08-19 12:11:17,439 INFO: Validation Set5
+	 # psnr: 28.4047	Best: 28.4047 @ 4000 iter
+
+2023-08-19 12:14:18,180 INFO: [004_R..][epoch: 20, iter:   4,100, lr:(1.999e-04,)] [eta: 3:14:01, time (data): 1.753 (0.001)] l_pix: 2.6564e-02 
+2023-08-19 12:17:13,913 INFO: [004_R..][epoch: 20, iter:   4,200, lr:(1.999e-04,)] [eta: 3:10:14, time (data): 1.756 (0.001)] l_pix: 3.4417e-02 
+2023-08-19 12:20:14,070 INFO: [004_R..][epoch: 21, iter:   4,300, lr:(1.999e-04,)] [eta: 3:06:35, time (data): 1.754 (0.001)] l_pix: 3.1713e-02 
+2023-08-19 12:23:09,321 INFO: [004_R..][epoch: 21, iter:   4,400, lr:(1.998e-04,)] [eta: 3:02:51, time (data): 1.753 (0.001)] l_pix: 2.7125e-02 
+2023-08-19 12:26:09,035 INFO: [004_R..][epoch: 22, iter:   4,500, lr:(1.998e-04,)] [eta: 2:59:15, time (data): 1.752 (0.002)] l_pix: 2.6687e-02 
+2023-08-19 12:26:09,035 INFO: Saving models and training states.
+2023-08-19 12:26:11,334 INFO: Validation Set5
+	 # psnr: 28.7255	Best: 28.7255 @ 4500 iter
+
+2023-08-19 12:29:07,674 INFO: [004_R..][epoch: 22, iter:   4,600, lr:(1.998e-04,)] [eta: 2:55:40, time (data): 1.758 (0.001)] l_pix: 2.6885e-02 
+2023-08-19 12:32:07,254 INFO: [004_R..][epoch: 23, iter:   4,700, lr:(1.998e-04,)] [eta: 2:52:07, time (data): 1.754 (0.002)] l_pix: 3.8024e-02 
+2023-08-19 12:35:03,018 INFO: [004_R..][epoch: 23, iter:   4,800, lr:(1.998e-04,)] [eta: 2:48:31, time (data): 1.756 (0.001)] l_pix: 2.5495e-02 
+2023-08-19 12:38:02,765 INFO: [004_R..][epoch: 24, iter:   4,900, lr:(1.998e-04,)] [eta: 2:45:02, time (data): 1.755 (0.001)] l_pix: 3.3374e-02 
+2023-08-19 12:40:58,641 INFO: [004_R..][epoch: 24, iter:   5,000, lr:(1.998e-04,)] [eta: 2:41:29, time (data): 1.757 (0.001)] l_pix: 3.0641e-02 
+2023-08-19 12:40:58,641 INFO: Saving models and training states.
+2023-08-19 12:41:01,018 INFO: Validation Set5
+	 # psnr: 28.9334	Best: 28.9334 @ 5000 iter
+
+2023-08-19 12:44:01,526 INFO: [004_R..][epoch: 25, iter:   5,100, lr:(1.998e-04,)] [eta: 2:38:05, time (data): 1.753 (0.001)] l_pix: 3.4334e-02 
+2023-08-19 12:46:56,730 INFO: [004_R..][epoch: 25, iter:   5,200, lr:(1.998e-04,)] [eta: 2:34:34, time (data): 1.752 (0.001)] l_pix: 2.4735e-02 
+2023-08-19 12:49:56,232 INFO: [004_R..][epoch: 26, iter:   5,300, lr:(1.998e-04,)] [eta: 2:31:09, time (data): 1.753 (0.001)] l_pix: 3.7998e-02 
+2023-08-19 12:52:51,457 INFO: [004_R..][epoch: 26, iter:   5,400, lr:(1.998e-04,)] [eta: 2:27:41, time (data): 1.752 (0.001)] l_pix: 2.7441e-02 
+2023-08-19 12:55:50,814 INFO: [004_R..][epoch: 27, iter:   5,500, lr:(1.998e-04,)] [eta: 2:24:17, time (data): 1.751 (0.001)] l_pix: 2.7072e-02 
+2023-08-19 12:55:50,814 INFO: Saving models and training states.
+2023-08-19 12:55:53,503 INFO: Validation Set5
+	 # psnr: 29.0677	Best: 29.0677 @ 5500 iter
+
+2023-08-19 12:58:49,398 INFO: [004_R..][epoch: 27, iter:   5,600, lr:(1.998e-04,)] [eta: 2:20:54, time (data): 1.756 (0.001)] l_pix: 2.2877e-02 
+2023-08-19 13:01:48,494 INFO: [004_R..][epoch: 28, iter:   5,700, lr:(1.997e-04,)] [eta: 2:17:32, time (data): 1.748 (0.002)] l_pix: 2.7180e-02 
+2023-08-19 13:04:43,510 INFO: [004_R..][epoch: 28, iter:   5,800, lr:(1.997e-04,)] [eta: 2:14:07, time (data): 1.749 (0.001)] l_pix: 2.5454e-02 
+2023-08-19 13:07:42,512 INFO: [004_R..][epoch: 29, iter:   5,900, lr:(1.997e-04,)] [eta: 2:10:47, time (data): 1.748 (0.001)] l_pix: 2.6488e-02 
+2023-08-19 13:10:37,320 INFO: [004_R..][epoch: 29, iter:   6,000, lr:(1.997e-04,)] [eta: 2:07:24, time (data): 1.748 (0.001)] l_pix: 3.1706e-02 
+2023-08-19 13:10:37,320 INFO: Saving models and training states.
+2023-08-19 13:10:39,744 INFO: Validation Set5
+	 # psnr: 29.1664	Best: 29.1664 @ 6000 iter
+
+2023-08-19 13:13:40,906 INFO: [004_R..][epoch: 30, iter:   6,100, lr:(1.997e-04,)] [eta: 2:04:08, time (data): 1.755 (0.003)] l_pix: 2.2656e-02 
+2023-08-19 13:16:36,446 INFO: [004_R..][epoch: 30, iter:   6,200, lr:(1.997e-04,)] [eta: 2:00:48, time (data): 1.755 (0.002)] l_pix: 3.0989e-02 
+2023-08-19 13:19:36,189 INFO: [004_R..][epoch: 31, iter:   6,300, lr:(1.997e-04,)] [eta: 1:57:31, time (data): 1.755 (0.001)] l_pix: 3.2457e-02 
+2023-08-19 13:22:31,648 INFO: [004_R..][epoch: 31, iter:   6,400, lr:(1.997e-04,)] [eta: 1:54:11, time (data): 1.755 (0.001)] l_pix: 3.1042e-02 
+2023-08-19 13:26:18,263 INFO: [004_R..][epoch: 32, iter:   6,500, lr:(1.997e-04,)] [eta: 1:51:21, time (data): 2.036 (0.002)] l_pix: 2.0582e-02 
+2023-08-19 13:26:18,263 INFO: Saving models and training states.
+2023-08-19 13:26:21,359 INFO: Validation Set5
+	 # psnr: 29.2266	Best: 29.2266 @ 6500 iter
+
+2023-08-19 13:29:45,298 INFO: [004_R..][epoch: 32, iter:   6,600, lr:(1.997e-04,)] [eta: 1:48:18, time (data): 2.038 (0.001)] l_pix: 2.3223e-02 
+2023-08-19 13:33:15,757 INFO: [004_R..][epoch: 33, iter:   6,700, lr:(1.996e-04,)] [eta: 1:45:16, time (data): 2.036 (0.001)] l_pix: 2.4407e-02 
+2023-08-19 13:36:39,089 INFO: [004_R..][epoch: 33, iter:   6,800, lr:(1.996e-04,)] [eta: 1:42:10, time (data): 2.034 (0.001)] l_pix: 2.3947e-02 
+2023-08-19 13:39:48,162 INFO: [004_R..][epoch: 34, iter:   6,900, lr:(1.996e-04,)] [eta: 1:38:57, time (data): 1.749 (0.002)] l_pix: 2.8413e-02 
+2023-08-19 13:42:43,507 INFO: [004_R..][epoch: 34, iter:   7,000, lr:(1.996e-04,)] [eta: 1:35:39, time (data): 1.752 (0.001)] l_pix: 3.0651e-02 
+2023-08-19 13:42:43,507 INFO: Saving models and training states.
+2023-08-19 13:42:45,947 INFO: Validation Set5
+	 # psnr: 29.2667	Best: 29.2667 @ 7000 iter
+
+2023-08-19 13:45:46,286 INFO: [004_R..][epoch: 35, iter:   7,100, lr:(1.996e-04,)] [eta: 1:32:24, time (data): 1.748 (0.001)] l_pix: 2.6886e-02 
+2023-08-19 13:48:41,260 INFO: [004_R..][epoch: 35, iter:   7,200, lr:(1.996e-04,)] [eta: 1:29:06, time (data): 1.749 (0.001)] l_pix: 3.0162e-02 
+2023-08-19 13:51:40,389 INFO: [004_R..][epoch: 36, iter:   7,300, lr:(1.996e-04,)] [eta: 1:25:51, time (data): 1.751 (0.001)] l_pix: 2.9274e-02 
+2023-08-19 13:54:35,343 INFO: [004_R..][epoch: 36, iter:   7,400, lr:(1.996e-04,)] [eta: 1:22:35, time (data): 1.750 (0.001)] l_pix: 3.5651e-02 
+2023-08-19 13:57:34,459 INFO: [004_R..][epoch: 37, iter:   7,500, lr:(1.996e-04,)] [eta: 1:19:20, time (data): 1.748 (0.002)] l_pix: 2.8466e-02 
+2023-08-19 13:57:34,459 INFO: Saving models and training states.
+2023-08-19 13:57:36,973 INFO: Validation Set5
+	 # psnr: 29.3042	Best: 29.3042 @ 7500 iter
+
+2023-08-19 14:00:33,092 INFO: [004_R..][epoch: 37, iter:   7,600, lr:(1.995e-04,)] [eta: 1:16:06, time (data): 1.756 (0.001)] l_pix: 2.4991e-02 
+2023-08-19 14:03:32,285 INFO: [004_R..][epoch: 38, iter:   7,700, lr:(1.995e-04,)] [eta: 1:12:52, time (data): 1.747 (0.001)] l_pix: 2.9723e-02 
+2023-08-19 14:06:27,295 INFO: [004_R..][epoch: 38, iter:   7,800, lr:(1.995e-04,)] [eta: 1:09:38, time (data): 1.749 (0.001)] l_pix: 3.0231e-02 
+2023-08-19 14:10:08,033 INFO: [004_R..][epoch: 39, iter:   7,900, lr:(1.995e-04,)] [eta: 1:06:36, time (data): 2.429 (0.001)] l_pix: 2.8545e-02 
+2023-08-19 14:13:31,714 INFO: [004_R..][epoch: 39, iter:   8,000, lr:(1.995e-04,)] [eta: 1:03:29, time (data): 2.186 (0.001)] l_pix: 2.5918e-02 
+2023-08-19 14:13:31,714 INFO: Saving models and training states.
+2023-08-19 14:13:36,421 INFO: Validation Set5
+	 # psnr: 29.3290	Best: 29.3290 @ 8000 iter
+
+2023-08-19 14:17:07,024 INFO: [004_R..][epoch: 40, iter:   8,100, lr:(1.995e-04,)] [eta: 1:00:24, time (data): 2.033 (0.004)] l_pix: 2.6774e-02 
+2023-08-19 14:20:06,066 INFO: [004_R..][epoch: 40, iter:   8,200, lr:(1.995e-04,)] [eta: 0:57:11, time (data): 1.881 (0.002)] l_pix: 3.1563e-02 
+2023-08-19 14:23:05,277 INFO: [004_R..][epoch: 41, iter:   8,300, lr:(1.995e-04,)] [eta: 0:53:57, time (data): 1.749 (0.000)] l_pix: 2.4958e-02 
+2023-08-19 14:26:00,363 INFO: [004_R..][epoch: 41, iter:   8,400, lr:(1.994e-04,)] [eta: 0:50:44, time (data): 1.750 (0.001)] l_pix: 2.8328e-02 
+2023-08-19 14:29:00,006 INFO: [004_R..][epoch: 42, iter:   8,500, lr:(1.994e-04,)] [eta: 0:47:32, time (data): 1.752 (0.001)] l_pix: 3.0940e-02 
+2023-08-19 14:29:00,006 INFO: Saving models and training states.
+2023-08-19 14:29:02,320 INFO: Validation Set5
+	 # psnr: 29.3542	Best: 29.3542 @ 8500 iter
+
+2023-08-19 14:31:58,615 INFO: [004_R..][epoch: 42, iter:   8,600, lr:(1.994e-04,)] [eta: 0:44:19, time (data): 1.759 (0.001)] l_pix: 2.4877e-02 
+2023-08-19 14:34:57,799 INFO: [004_R..][epoch: 43, iter:   8,700, lr:(1.994e-04,)] [eta: 0:41:08, time (data): 1.751 (0.002)] l_pix: 2.6736e-02 
+2023-08-19 14:37:53,303 INFO: [004_R..][epoch: 43, iter:   8,800, lr:(1.994e-04,)] [eta: 0:37:56, time (data): 1.753 (0.001)] l_pix: 2.8366e-02 
+2023-08-19 14:40:52,977 INFO: [004_R..][epoch: 44, iter:   8,900, lr:(1.994e-04,)] [eta: 0:34:45, time (data): 1.754 (0.001)] l_pix: 2.0204e-02 
+2023-08-19 14:43:48,242 INFO: [004_R..][epoch: 44, iter:   9,000, lr:(1.994e-04,)] [eta: 0:31:33, time (data): 1.753 (0.001)] l_pix: 3.4083e-02 
+2023-08-19 14:43:48,242 INFO: Saving models and training states.
+2023-08-19 14:43:50,463 INFO: Validation Set5
+	 # psnr: 29.3793	Best: 29.3793 @ 9000 iter
+
+2023-08-19 14:46:50,511 INFO: [004_R..][epoch: 45, iter:   9,100, lr:(1.993e-04,)] [eta: 0:28:23, time (data): 1.748 (0.002)] l_pix: 2.8263e-02 
+2023-08-19 14:49:56,133 INFO: [004_R..][epoch: 45, iter:   9,200, lr:(1.993e-04,)] [eta: 0:25:13, time (data): 1.818 (0.002)] l_pix: 2.4240e-02 
+2023-08-19 14:52:55,230 INFO: [004_R..][epoch: 46, iter:   9,300, lr:(1.993e-04,)] [eta: 0:22:03, time (data): 1.752 (0.000)] l_pix: 2.1739e-02 
+2023-08-19 14:55:50,317 INFO: [004_R..][epoch: 46, iter:   9,400, lr:(1.993e-04,)] [eta: 0:18:53, time (data): 1.751 (0.001)] l_pix: 2.8030e-02 
+2023-08-19 14:58:49,656 INFO: [004_R..][epoch: 47, iter:   9,500, lr:(1.993e-04,)] [eta: 0:15:43, time (data): 1.749 (0.001)] l_pix: 2.6680e-02 
+2023-08-19 14:58:49,656 INFO: Saving models and training states.
+2023-08-19 14:58:52,191 INFO: Validation Set5
+	 # psnr: 29.3925	Best: 29.3925 @ 9500 iter
+
+2023-08-19 15:01:48,527 INFO: [004_R..][epoch: 47, iter:   9,600, lr:(1.993e-04,)] [eta: 0:12:34, time (data): 1.759 (0.001)] l_pix: 2.6547e-02 
+2023-08-19 15:04:48,264 INFO: [004_R..][epoch: 48, iter:   9,700, lr:(1.993e-04,)] [eta: 0:09:24, time (data): 1.755 (0.001)] l_pix: 3.1157e-02 
+2023-08-19 15:07:44,011 INFO: [004_R..][epoch: 48, iter:   9,800, lr:(1.992e-04,)] [eta: 0:06:15, time (data): 1.757 (0.001)] l_pix: 2.7310e-02 
+2023-08-19 15:10:43,667 INFO: [004_R..][epoch: 49, iter:   9,900, lr:(1.992e-04,)] [eta: 0:03:06, time (data): 1.756 (0.001)] l_pix: 2.7029e-02 
+2023-08-19 15:13:38,708 INFO: [004_R..][epoch: 49, iter:  10,000, lr:(1.992e-04,)] [eta: -1 day, 23:59:59, time (data): 1.752 (0.001)] l_pix: 2.5195e-02 
+2023-08-19 15:13:38,708 INFO: Saving models and training states.
+2023-08-19 15:13:41,038 INFO: Validation Set5
+	 # psnr: 29.4027	Best: 29.4027 @ 10000 iter
+
+2023-08-19 15:13:45,244 INFO: End of training. Time consumed: 5:14:48
+2023-08-19 15:13:45,244 INFO: Save the latest model.
+2023-08-19 15:13:47,512 INFO: Validation Set5
+	 # psnr: 29.4027	Best: 29.4027 @ 10001 iter
+
