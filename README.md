@@ -20,5 +20,5 @@ Models are aalialble in "experiments" folder.
 # RESULTS
 All the results for each iteration are located in the "results" folder.
 
-#miscellaneous
+#MISCELLANEOUS
 All the training and testing codes are available in "docs" folder README.md
