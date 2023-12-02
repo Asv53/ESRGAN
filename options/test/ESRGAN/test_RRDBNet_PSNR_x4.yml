@@ -1,0 +1,44 @@
+name: 21-36-10000
+model_type: SRModel
+scale: 4
+num_gpu: 1  # set num_gpu: 0 for cpu mode
+manual_seed: 0
+
+datasets:
+  test_1:  # the 1st test dataset
+    name: custom
+    type: PairedImageDataset
+    dataroot_gt: datasets/custom/hr
+    dataroot_lq: datasets/custom/lr
+    io_backend:
+      type: disk
+
+
+# network structures
+network_g:
+  type: RRDBNet
+  num_in_ch: 3
+  num_out_ch: 3
+  num_feat: 64
+  num_block: 21
+  num_grow_ch: 36
+
+# path
+path:
+  pretrain_network_g: experiments/004_RRDBNet_PSNR_x4_f64b21_SET14_10k_B16G1_wandb/models/net_g_10000.pth
+  strict_load_g: true
+
+# validation settings
+val:
+  save_img: true
+  suffix: ~  # add suffix to saved images, if None, use exp name
+
+  metrics:
+    psnr: # metric name, can be arbitrary
+      type: calculate_psnr
+      crop_border: 4
+      test_y_channel: false
+    ssim:
+      type: calculate_ssim
+      crop_border: 4
+      test_y_channel: false
