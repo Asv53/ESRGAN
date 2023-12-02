@@ -1,4 +1,4 @@
-##ESRGAN (Enhances Super Resolution Generative Adversarial Networks)
+#ESRGAN (Enhances Super Resolution Generative Adversarial Networks)
 This project aims to know the impact of number of Residual in Residual Dense Blocks (RRDB) and number of Growth Channels on the image upscalinng (x4). This project is based on "basicsr" repository.
 
 #OUR WORK In this project which we trained 4 models:
