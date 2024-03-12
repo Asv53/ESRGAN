@@ -10,7 +10,7 @@ In this project which we trained 4 models:
 1. 21 blocks with 32 growth channels.
 2. 21 blocks with 36 growth channels.
 3. 23 blocks with 32 growth channels.
-4. 25 blocks with 32 growth channels.\
+4. 25 blocks with 32 growth channels.
 
 ### DATASETS
 These models were trained on SET 14 dataset with random flips and rotation and validated on SET 5 dataset.
